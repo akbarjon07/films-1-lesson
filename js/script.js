@@ -4,9 +4,63 @@ const elResult = document.querySelector(".movie__result-num");
 const elMovieList = document.querySelector(".movie__list");
 const elForm = document.querySelector(".form");
 const elFormSelect = document.querySelector(".form__select");
-
+const elBookmarkList = document.querySelector(".bookmark__list");
 
 elResult.textContent = films.length
+
+const bookmarks = [];
+
+
+elBookmarkList.addEventListener("click", function(evt){
+  if (evt.target.matches(".delete-btn")){
+    const bookmarkDeleteId = evt.target.dataset.bookmarkDeleteId;
+    const bookmarkFoundIndex = bookmarks.findIndex((bookmark) => {
+      bookmark.id === bookmarkDeleteId
+    })
+
+    bookmarks.splice(bookmarkFoundIndex, 1)
+
+    elBookmarkList.innerHTML = null;
+
+    renderBookmarks(bookmarks, elBookmarkList);
+  }
+})
+
+const renderBookmarks = function (arr, htmlElement) {
+  arr.forEach((bookmark) => {
+    const newBookmarkItem = document.createElement("li");
+    const newDeleteDtn = document.createElement("button");
+
+    newBookmarkItem.textContent = bookmark.title;
+    newDeleteDtn.textContent = "Remove";
+
+    newDeleteDtn.setAttribute("class", "delete-btn btn btn-danger ms-3")
+
+    newDeleteDtn.dataset.bookmarkDeleteId = bookmark.id;
+
+    htmlElement.appendChild(newBookmarkItem);
+    newBookmarkItem.appendChild(newDeleteDtn);
+  })
+}
+
+
+elMovieList.addEventListener("click", function (evt) {
+
+  if (evt.target.matches(".bookmark")) {
+    const bookmarkBtnId = evt.target.dataset.bookmarkBtnId;
+    const foundFilmIndex = films.find((film) => film.id === bookmarkBtnId);
+
+    if (!bookmarks.includes(foundFilmIndex)) {
+      bookmarks.push(foundFilmIndex);
+    }
+
+
+    elBookmarkList.innerHTML = null;
+
+    renderBookmarks(bookmarks, elBookmarkList)
+  }
+
+})
 
 
 const renderGenres = function (arr) {
@@ -43,6 +97,8 @@ const renderMovies = function (filmsArr, htmlElement) {
     const newWrapper = document.createElement("div");
     const newTitle = document.createElement("h5");
     const newButton = document.createElement("a");
+    const genresList = document.createElement("ul");
+    const newBookmarkBtn = document.createElement("button");
 
     // SET ATTRIBUTE
     newItem.setAttribute("class", "card mb-3");
@@ -53,11 +109,15 @@ const renderMovies = function (filmsArr, htmlElement) {
     newTitle.classList.add("card-title");
     newButton.setAttribute("class", "btn btn-danger");
     newButton.setAttribute("href", `https://www.youtube.com/watch?v=${film.youtubeId}`);
+    newBookmarkBtn.setAttribute("class", "bookmark btn btn-secondary mt-3")
 
     newTitle.textContent = film.title;
-    newButton.textContent = "Watch Trailer"
+    newButton.textContent = "Watch Trailer";
+    newBookmarkBtn.textContent = "Bookmark";
 
-    const genresList = document.createElement("ul");
+    newBookmarkBtn.dataset.bookmarkBtnId = film.id
+
+
 
     film.genres.forEach((genre) => {
       const genresItem = document.createElement("li");
@@ -74,6 +134,7 @@ const renderMovies = function (filmsArr, htmlElement) {
     newWrapper.appendChild(newTitle);
     newWrapper.appendChild(newButton);
     newWrapper.appendChild(genresList);
+    newWrapper.appendChild(newBookmarkBtn);
 
 
   });
