@@ -8,7 +8,9 @@ const elBookmarkList = document.querySelector(".bookmark__list");
 
 elResult.textContent = films.length
 
-const bookmarks = [];
+const localData =JSON.parse(window.localStorage.getItem("bookmarks"));
+
+const bookmarks = localData || [];
 
 
 elBookmarkList.addEventListener("click", function(evt){
@@ -23,8 +25,15 @@ elBookmarkList.addEventListener("click", function(evt){
     elBookmarkList.innerHTML = null;
 
     renderBookmarks(bookmarks, elBookmarkList);
+
+    window.localStorage.setItem("bookmarks", JSON.stringify(bookmarks));
+    if (bookmarks.length === 0) {
+      window.localStorage.removeItem("bookmarks", JSON.stringify(bookmarks))
+    }
   }
 })
+
+
 
 const renderBookmarks = function (arr, htmlElement) {
   arr.forEach((bookmark) => {
@@ -43,6 +52,8 @@ const renderBookmarks = function (arr, htmlElement) {
   })
 }
 
+renderBookmarks(bookmarks, elBookmarkList);
+
 
 elMovieList.addEventListener("click", function (evt) {
 
@@ -56,6 +67,8 @@ elMovieList.addEventListener("click", function (evt) {
 
 
     elBookmarkList.innerHTML = null;
+
+    window.localStorage.setItem("bookmarks", JSON.stringify(bookmarks));
 
     renderBookmarks(bookmarks, elBookmarkList)
   }
@@ -153,6 +166,8 @@ elForm.addEventListener("submit", function (evt){
   films.forEach(function(film){
     if(selectedValue === "all" || film.genres.includes(selectedValue)) {
       filteredFilms.push(film)
+
+
     }
   })
 
